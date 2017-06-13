@@ -1,7 +1,8 @@
-import requests
+  import requests
 import json
 from django.conf import settings
-
+from pprint import pprint
+from .models import Comix
 
 class Request(object):
     """docstring for Request"""
@@ -19,10 +20,24 @@ class Request(object):
 
     def getAllComix(self):
         totalPages = self.getTotalPages()
-        for i in range(totalPages):
-       		response = requests.get(settings.COMIX_URL['URL_LIBRARY'] + i)
-       		response = response.json()
-       		libraryPage = response['dados']
-       		
+        for i in range(1, totalPages):
+            response = requests.get(settings.COMIX_URL['URL_LIBRARY'] + str(i))
+            response = response.json()
+            libraryPage = response['dados']
+            for j in libraryPage:
+                response = requests.get(
+                    settings.COMIX_URL['URL_COMIX'] + str(j['id']))
+                comixJson = response.json()
+                comix = Comix()
+                comix.plot = comixJson['sinopse']
+                comix.title = comixJson['titulo']
+                comix.id_comix = comixJson['id']
+                comix.year = comixJson['ano']
+                comix.adult = comixJson['maioridade']
+                comix.views = comixJson['views']
+                comix.type = comixJson['tipo']
+                comix.chapters = comixJson['capitulos'].len()
 
-        return teste
+                return comix
+            break
+        # return teste
