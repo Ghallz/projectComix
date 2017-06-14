@@ -1,10 +1,9 @@
 from django.db import models
-import helper
 import uuid
 # Create your models here.
 
 
-class Comix(object):
+class Comix(models.Model):
     """docstring for Comix"""
     plot = models.TextField()
     title = models.CharField(max_length=300)
@@ -13,6 +12,12 @@ class Comix(object):
     views = models.BigIntegerField()
     cover = models.CharField(max_length=50)
 
-class Chapter(object):
+    def __str__(self):
+        return self.plot
+
+
+class Chapter(models.Model):
     """docstring for Chapter"""
-    
+    comixId = models.ForeignKey(Comix, on_delete=models.CASCADE)
+    mainPage = models.CharField(max_length=200)
+    cover = models.CharField(max_length=200)
