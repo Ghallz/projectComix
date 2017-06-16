@@ -75,9 +75,9 @@ class Request(object):
                                 os.chmod(folder, 0o777)
 
                             fileName = str(count) + ".jpg"
-                            
-                            myOpener = Downloader()
-                            myOpener.retrieve(l, folder +"/"+ fileName)
+                            if not os.path.exists(folder +"/"+ fileName):
+                                myOpener = Downloader()
+                                myOpener.retrieve(l, folder +"/"+ fileName)
                             """
                             """
                         count += 1
