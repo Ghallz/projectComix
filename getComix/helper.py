@@ -7,6 +7,9 @@ import urllib
 import re
 import os
 
+class Downloader(urllib.request.FancyURLopener):
+    """docstring for FancyOpener"""
+    version = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11'
 
 class Request(object):
     """docstring for Request"""
@@ -23,12 +26,6 @@ class Request(object):
         return totalPages
 
     def getAllComix(self):
-        url = 'http://hqultimate.com/leitor/hq/13 Artefato/01/01.jpg'
-        testfile = urllib.request.urlretrieve(url, "teste.jpg")
-        testfile.retrieve
-
-        return 'fileDownloaded'
-
         totalPages = self.getTotalPages()
         for i in range(1, 2):
             # for i in range(1, totalPages):
@@ -50,14 +47,10 @@ class Request(object):
                 comix.chapters = len(comixJson['capitulos'])
                 # comix.save()
                 folder = os.path.abspath(os.path.join(
-                    os.sep, 'home', 'galiza', 'comixDatabase', comixJson['titulo']))
-
-                if not os.path.isdir(folder):
-                    print('\n\nCRIANDO PASTA\n\n' +
-                          str(comixJson['titulo']))
-                    os.mkdir(folder)
+                    os.sep, 'home', 'fillipe', 'comixDatabase', comixJson['titulo']))
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
                     os.chmod(folder, 0o777)
-
                 for k in range(len(comixJson['capitulos'])):
                     chapterJson = comixJson['capitulos'][k]
                     comixChapter = Chapter()
@@ -68,33 +61,27 @@ class Request(object):
                     mainChapterPage = requests.get(chapterJson['arquivo'])
                     raw = mainChapterPage.text
                     links = re.findall('(?<=data-lazy=")(.*?)(?=\")', raw)
-                    return links
 
+                    count = 1
                     for l in links:
-                        match = re.search('.png', links[k])
+                        match = re.search('jpg', l)
                         if(match is not None):
                             """save file """
                             folder = os.path.abspath(os.path.join(
-                                os.sep, 'home', 'galiza', 'comixDatabase', comixJson['titulo'], chapterJson['capitulo']))
-
-                            if not os.path.isdir(folder):
-                                print('\n\nCRIANDO PASTA\n\n' +
-                                      str(comixJson['titulo']))
-                                os.mkdir(folder)
+                                os.sep, 'home', 'fillipe', 'comixDatabase', comixJson['titulo'], chapterJson['capitulo']))
+                            
+                            if not os.path.exists(folder):
+                                os.makedirs(folder)
                                 os.chmod(folder, 0o777)
 
-                            fileName = str(l) + ".jpg"
-
-                            request.urlretrieve(links[k], folder + fileName)
+                            fileName = str(count) + ".jpg"
+                            
+                            myOpener = Downloader()
+                            myOpener.retrieve(l, folder +"/"+ fileName)
                             """
                             """
-                            user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-                            headers = { 'User-Agent' : user_agent }
-                            imgRequest = urllib.Request(
-                                imgUrl, headers=headers)
-                            imgData = urllib.urlopen(imgRequest).read()
-
-                            print("SALVANDO IMAGEM" + fileName)
-            print("Finalizando " + comixJson['titulo'])
+                        count += 1
             break
         # return teste
+
+
