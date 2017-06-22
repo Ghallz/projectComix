@@ -48,6 +48,7 @@ class Request(object):
                 # comix.save()
                 folder = os.path.abspath(os.path.join(
                     os.sep, 'home', 'fillipe', 'comixDatabase', comixJson['titulo']))
+                folder = re.sub(r'[^\w\*]', '', folder, flags=re.IGNORECASE)
                 if not os.path.exists(folder):
                     os.makedirs(folder)
                     os.chmod(folder, 0o777)
@@ -69,7 +70,7 @@ class Request(object):
                             """save file """
                             folder = os.path.abspath(os.path.join(
                                 os.sep, 'home', 'fillipe', 'comixDatabase', comixJson['titulo'], chapterJson['capitulo']))
-                            
+                            folder = re.sub(r'[^\w\*]', '', folder, flags=re.IGNORECASE)
                             if not os.path.exists(folder):
                                 os.makedirs(folder)
                                 os.chmod(folder, 0o777)
@@ -81,7 +82,6 @@ class Request(object):
                             """
                             """
                         count += 1
-            break
         # return teste
 
 
